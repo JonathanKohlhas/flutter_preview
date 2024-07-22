@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -31,33 +32,33 @@ class DaemonService extends MultiplePeer {
   }
 }
 
-class Stoutsink extends StreamSink<String> {
-  @override
-  void add(String event) {
-    stdout.writeln(event);
-  }
+// class Stoutsink extends StreamSink<String> {
+//   @override
+//   void add(String event) {
+//     stdout.writeln(event);
+//   }
 
-  @override
-  void addError(Object error, [StackTrace stackTrace]) {
-    stdout.addError(error, stackTrace);
-  }
+//   @override
+//   void addError(Object error, [StackTrace stackTrace]) {
+//     stdout.addError(error, stackTrace);
+//   }
 
-  @override
-  Future addStream(Stream<String> stream) {
-    return stdout.addStream(stream.transform(Utf8Encoder()));
-  }
+//   @override
+//   Future addStream(Stream<String> stream) {
+//     return stdout.addStream(stream.transform(Utf8Encoder()));
+//   }
 
-  @override
-  Future close() {
-    return stdout.close();
-  }
+//   @override
+//   Future close() {
+//     return stdout.close();
+//   }
 
-  @override
-  Future get done => stdout.close();
-}
+//   @override
+//   Future get done => stdout.close();
+// }
 
 abstract class MultiplePeer {
-  Peer _server;
+  late Peer _server;
   Map<WebSocketChannel, Peer> sockets = {};
 
   //StreamChannel<String> _socket;
@@ -76,8 +77,8 @@ abstract class MultiplePeer {
 
   removeWebSocket(WebSocketChannel webSocket) {
     final peer = sockets[webSocket];
-    peer.close();
-    sockets[webSocket] = null;
+    peer?.close();
+    sockets.remove(webSocket);
   }
 
   Future run() async {
@@ -92,7 +93,9 @@ abstract class MultiplePeer {
 
     final channel = StreamChannel<String>(
       stdin.transform(Utf8Decoder()).transform(LineSplitter()),
-      Stoutsink(),
+      stdout.nonBlocking.transform(
+          StreamSinkTransformer.fromStreamTransformer(Utf8Encoder())),
+      // Stoutsink(),
     );
 
     _server = Peer(channel, strictProtocolChecks: false,

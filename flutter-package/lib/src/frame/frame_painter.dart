@@ -1,9 +1,8 @@
-import 'package:device_frame/src/keyboard/virtual_keyboard.dart';
+import 'dart:math' as math;
+
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'dart:math' as math;
 
 /// A generic widget that renders a simulated mobile device frame.
 ///
@@ -11,7 +10,7 @@ import 'dart:math' as math;
 class MobileDeviceFrame extends StatelessWidget {
   final Widget child;
 
-  final DeviceFrameStyle style;
+  final DeviceFrameStyle? style;
 
   final EdgeInsets body;
 
@@ -21,55 +20,40 @@ class MobileDeviceFrame extends StatelessWidget {
 
   final BorderRadius screenRadius;
 
-  final List<DeviceSideButton> sideButtons;
-
-  final DeviceNotch notch;
-
   final Orientation orientation;
 
   final MediaQueryData mediaQueryData;
 
   final TargetPlatform platform;
 
-  final Widget keyboard;
-
-  final double keyboardHeight;
-
   final bool isKeyboardVisible;
 
   final Duration keyboardTransitionDuration;
 
   MobileDeviceFrame(
-      {@required this.platform,
-      @required this.child,
-      @required this.orientation,
-      @required this.mediaQueryData,
+      {required this.platform,
+      required this.child,
+      required this.orientation,
+      required this.mediaQueryData,
       this.isKeyboardVisible = false,
-      this.keyboard = const VirtualKeyboard(),
-      this.keyboardHeight = VirtualKeyboard.minHeight,
+      // this.keyboard = const VirtualKeyboard(),
       this.keyboardTransitionDuration = const Duration(milliseconds: 500),
       this.style,
       this.borderSize = 4,
       this.body = const EdgeInsets.all(38),
       this.edgeRadius = const BorderRadius.all(Radius.circular(20)),
       this.screenRadius = const BorderRadius.all(Radius.circular(8)),
-      this.notch,
-      this.sideButtons = const [],
-      EdgeInsets edgeInsets = EdgeInsets.zero})
-      : assert(keyboard != null),
-        assert(keyboardHeight != null),
-        assert(isKeyboardVisible != null),
-        assert(borderSize != null),
-        assert(platform != null),
-        assert(body != null);
+      EdgeInsets edgeInsets = EdgeInsets.zero});
 
   MediaQueryData _createMediaQuery(BuildContext context) {
     var result = this.mediaQueryData;
+    var keyboardMediaQuery = VirtualKeyboard.mediaQuery(result);
 
     if (isKeyboardVisible) {
       result = result.copyWith(
         viewInsets: EdgeInsets.only(
-          bottom: VirtualKeyboard.minHeight + result.padding.bottom,
+          bottom: keyboardMediaQuery.viewInsets.bottom +
+              keyboardMediaQuery.padding.bottom,
         ),
       );
     }
@@ -93,29 +77,10 @@ class MobileDeviceFrame extends StatelessWidget {
 
     final childMediaQuery = _createMediaQuery(context);
 
-    final childWithKeyboard = Stack(
-      children: <Widget>[
-        Positioned.fill(
-          child: child,
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: AnimatedCrossFade(
-            firstChild: SizedBox(),
-            secondChild: VirtualKeyboard(
-              height:
-                  VirtualKeyboard.minHeight + childMediaQuery.padding.bottom,
-            ),
-            crossFadeState: isKeyboardVisible
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: keyboardTransitionDuration,
-          ),
-        ),
-      ],
-    );
+    final childWithKeyboard = VirtualKeyboard(
+        child: child,
+        isEnabled: isKeyboardVisible,
+        transitionDuration: keyboardTransitionDuration);
 
     final childWithMetadata = MediaQuery(
       data: childMediaQuery,
@@ -141,13 +106,6 @@ class MobileDeviceFrame extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: edgeRadius,
-                  boxShadow: [
-                    if (style.shadowColor != null)
-                      BoxShadow(
-                        blurRadius: 70,
-                        color: style.shadowColor,
-                      ),
-                  ],
                 ),
               ),
             ),
@@ -177,14 +135,11 @@ class MobileDeviceFrame extends StatelessWidget {
     properties.add(DiagnosticsProperty<EdgeInsets>('body', body));
     properties.add(DiagnosticsProperty<DeviceFrameStyle>('style', style));
     properties.add(DiagnosticsProperty<double>('borderSize', borderSize));
-    properties.add(DiagnosticsProperty<DeviceNotch>('notch', notch));
     properties
         .add(DiagnosticsProperty<Orientation>('orientation', orientation));
     properties.add(DiagnosticsProperty<BorderRadius>('edgeRadius', edgeRadius));
     properties
         .add(DiagnosticsProperty<BorderRadius>('screenRadius', screenRadius));
-    properties.add(DiagnosticsProperty<List<DeviceSideButton>>(
-        'sideButtons', sideButtons));
   }
 }
 
@@ -198,8 +153,8 @@ class _DeviceFramePainter extends CustomPainter {
   final DeviceFrameStyle style;
 
   const _DeviceFramePainter({
-    @required this.device,
-    @required this.style,
+    required this.device,
+    required this.style,
   });
 
   Path _createBodyPath(Size size) {
@@ -230,137 +185,6 @@ class _DeviceFramePainter extends CustomPainter {
       );
   }
 
-  Path _createButtonPath(DeviceSideButton b, Rect bodyBounds) {
-    final buttonPath = Path();
-    switch (b.edge) {
-      case DeviceEdge.left:
-        final left = bodyBounds.left - b.thickness;
-        final top = bodyBounds.top + b.position;
-        final rect = Rect.fromLTWH(
-          left,
-          top,
-          b.thickness,
-          b.size,
-        );
-        buttonPath.addRRect(
-          RRect.fromRectAndCorners(
-            rect,
-            topLeft: b.radius,
-            bottomLeft: b.radius,
-          ),
-        );
-        break;
-      case DeviceEdge.right:
-        final left = bodyBounds.right;
-        final top = bodyBounds.top + b.position;
-        final rect = Rect.fromLTWH(
-          left,
-          top,
-          b.thickness,
-          b.size,
-        );
-        buttonPath.addRRect(
-          RRect.fromRectAndCorners(
-            rect,
-            topRight: b.radius,
-            bottomRight: b.radius,
-          ),
-        );
-        break;
-      case DeviceEdge.top:
-        final left = bodyBounds.left + b.position;
-        final top = bodyBounds.top - b.thickness;
-        final rect = Rect.fromLTWH(
-          left,
-          top,
-          b.size,
-          b.thickness,
-        );
-        buttonPath.addRRect(
-          RRect.fromRectAndCorners(
-            rect,
-            topLeft: b.radius,
-            topRight: b.radius,
-          ),
-        );
-        break;
-      case DeviceEdge.bottom:
-        final left = bodyBounds.left + b.position;
-        final top = bodyBounds.bottom;
-        final rect = Rect.fromLTWH(left, top, b.size, b.thickness);
-        buttonPath.addRRect(
-          RRect.fromRectAndCorners(
-            rect,
-            bottomLeft: b.radius,
-            bottomRight: b.radius,
-          ),
-        );
-        break;
-      default:
-        break;
-    }
-
-    return buttonPath;
-  }
-
-  Path _createNotchPath(Size size) {
-    final notchRect = Offset(
-            (size.width / 2) - (device.notch.width / 2), device.body.top - 1) &
-        Size(
-          device.notch.width,
-          device.notch.height + 1,
-        );
-
-    final leftCornerMiniRect =
-        Offset(notchRect.left - device.notch.joinRadius.x, notchRect.top) &
-            Size(
-              device.notch.joinRadius.x,
-              device.notch.joinRadius.x,
-            );
-    final leftCorner = Path.combine(
-      PathOperation.difference,
-      Path()..addRect(leftCornerMiniRect),
-      Path()
-        ..addRRect(
-          RRect.fromRectAndCorners(
-            leftCornerMiniRect,
-            topRight: Radius.circular(device.notch.joinRadius.x / 2),
-          ),
-        ),
-    );
-
-    final rightCornerMiniRect = Offset(notchRect.right, notchRect.top) &
-        Size(device.notch.joinRadius.x, device.notch.joinRadius.x);
-    final rightCorner = Path.combine(
-      PathOperation.difference,
-      Path()..addRect(rightCornerMiniRect),
-      Path()
-        ..addRRect(
-          RRect.fromRectAndCorners(
-            rightCornerMiniRect,
-            topLeft: Radius.circular(device.notch.joinRadius.x / 2),
-          ),
-        ),
-    );
-
-    return Path()
-      ..addRRect(
-        RRect.fromRectAndCorners(
-          notchRect,
-          bottomLeft: device.notch.radius,
-          bottomRight: device.notch.radius,
-        ),
-      )
-      ..addPath(
-        leftCorner,
-        Offset.zero,
-      )
-      ..addPath(
-        rightCorner,
-        Offset.zero,
-      );
-  }
-
   @override
   void paint(Canvas canvas, Size size) {
     Size size;
@@ -388,17 +212,6 @@ class _DeviceFramePainter extends CustomPainter {
     final body = _createBodyPath(size);
     var screen = _createScreenPath(size);
 
-    if (!kIsWeb) {
-      if (device.notch != null && device.notch.width > 0) {
-        final notchPath = _createNotchPath(size);
-        screen = Path.combine(
-          PathOperation.difference,
-          screen,
-          notchPath,
-        );
-      }
-    }
-
     final bodyWithoutScreen =
         kIsWeb ? body : Path.combine(PathOperation.difference, body, screen);
 
@@ -406,7 +219,7 @@ class _DeviceFramePainter extends CustomPainter {
         bodyWithoutScreen,
         Paint()
           ..style = PaintingStyle.fill
-          ..color = style.bodyColor);
+          ..color = style.keyboardStyle.backgroundColor);
     if (kIsWeb) {
       canvas.drawPath(
           screen,
@@ -420,24 +233,14 @@ class _DeviceFramePainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = device.borderSize
-        ..color = style.borderColor,
+        ..color = style.keyboardStyle.button1ForegroundColor,
     );
 
     final bodyBounds = body.getBounds();
-
-    device.sideButtons.forEach((b) {
-      canvas.drawPath(
-        _createButtonPath(b, bodyBounds),
-        Paint()
-          ..style = PaintingStyle.fill
-          ..color = style.buttonColor,
-      );
-    });
   }
 
   @override
   bool shouldRepaint(_DeviceFramePainter oldDelegate) =>
-      device.notch != oldDelegate.device.notch ||
       device.orientation != oldDelegate.device.orientation ||
       device.borderSize != oldDelegate.device.borderSize ||
       device.edgeRadius != oldDelegate.device.edgeRadius ||

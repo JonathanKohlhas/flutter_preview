@@ -1,4 +1,3 @@
-import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:preview/preview.dart';
 
@@ -129,18 +128,6 @@ const _cupertinoWithNotchFrame = FrameData(
   bodyPadding: const EdgeInsets.only(top: 18, right: 18, left: 18, bottom: 18),
   edgeRadius: BorderRadius.all(Radius.circular(56)),
   screenRadius: BorderRadius.all(Radius.circular(38)),
-  sideButtons: [
-    const DeviceSideButton.left(fromTop: 116, size: 35, thickness: 6),
-    DeviceSideButton.left(fromTop: 176, size: 60, thickness: 6),
-    DeviceSideButton.left(fromTop: 240, size: 60, thickness: 6),
-    DeviceSideButton.right(fromTop: 176, size: 90, thickness: 6),
-  ],
-  notch: DeviceNotch(
-    width: 210,
-    height: 28,
-    joinRadius: Radius.circular(12),
-    radius: Radius.circular(24),
-  ),
 );
 
 const _cupertinoWithoutNotchFrame = FrameData(
@@ -153,12 +140,6 @@ const _cupertinoWithoutNotchFrame = FrameData(
   ),
   edgeRadius: BorderRadius.all(Radius.circular(56)),
   screenRadius: BorderRadius.all(Radius.circular(2)),
-  sideButtons: [
-    DeviceSideButton.left(fromTop: 96, size: 35, thickness: 6),
-    DeviceSideButton.left(fromTop: 156, size: 60, thickness: 6),
-    DeviceSideButton.left(fromTop: 220, size: 60, thickness: 6),
-    DeviceSideButton.right(fromTop: 156, size: 60, thickness: 6),
-  ],
 );
 
 const _cupertinoTabletWithThinBordersFrame = FrameData(
@@ -171,10 +152,6 @@ const _cupertinoTabletWithThinBordersFrame = FrameData(
   ),
   edgeRadius: BorderRadius.all(Radius.circular(56)),
   screenRadius: BorderRadius.all(Radius.circular(16)),
-  sideButtons: [
-    DeviceSideButton.right(fromTop: 96, size: 42, thickness: 6),
-    DeviceSideButton.right(fromTop: 146, size: 42, thickness: 6),
-  ],
 );
 
 const _cupertinoTabletFrame = FrameData(
@@ -182,12 +159,6 @@ const _cupertinoTabletFrame = FrameData(
   bodyPadding: const EdgeInsets.only(top: 96, right: 18, left: 18, bottom: 96),
   edgeRadius: BorderRadius.all(Radius.circular(56)),
   screenRadius: BorderRadius.all(Radius.circular(2)),
-  sideButtons: [
-    DeviceSideButton.left(fromTop: 96, size: 35, thickness: 6),
-    DeviceSideButton.left(fromTop: 156, size: 60, thickness: 6),
-    DeviceSideButton.left(fromTop: 220, size: 60, thickness: 6),
-    DeviceSideButton.right(fromTop: 156, size: 60, thickness: 6),
-  ],
 );
 
 const _appleWatch5_40mmFrame = FrameData(
@@ -197,9 +168,6 @@ const _appleWatch5_40mmFrame = FrameData(
   screenRadius: BorderRadius.all(Radius.circular(32)),
   size: Size(162, 197),
   pixelRatio: 2,
-  sideButtons: [
-    DeviceSideButton.right(fromTop: 40, size: 40, thickness: 12),
-  ],
 );
 
 const _appleWatch5_44mmFrame = FrameData(
@@ -209,9 +177,6 @@ const _appleWatch5_44mmFrame = FrameData(
   screenRadius: BorderRadius.all(Radius.circular(32)),
   size: Size(184, 224),
   pixelRatio: 2,
-  sideButtons: [
-    DeviceSideButton.right(fromTop: 42, size: 40, thickness: 12),
-  ],
 );
 
 //
@@ -265,18 +230,6 @@ const _androidPhoneFrame = FrameData(
   ),
   edgeRadius: BorderRadius.all(Radius.circular(56)),
   screenRadius: BorderRadius.all(Radius.circular(24)),
-  sideButtons: [
-    DeviceSideButton.right(
-      fromTop: 156,
-      size: 60,
-      thickness: 3,
-    ),
-    DeviceSideButton.right(
-      fromTop: 236,
-      size: 100,
-      thickness: 3,
-    ),
-  ],
 );
 
 const _androidRoundWatchFrame = FrameData(
@@ -300,18 +253,6 @@ const _androidTabletFrame = FrameData(
   ),
   edgeRadius: BorderRadius.all(Radius.circular(32)),
   screenRadius: BorderRadius.all(Radius.circular(16)),
-  sideButtons: [
-    DeviceSideButton.right(
-      fromTop: 156,
-      size: 60,
-      thickness: 3,
-    ),
-    DeviceSideButton.right(
-      fromTop: 236,
-      size: 100,
-      thickness: 3,
-    ),
-  ],
 );
 
 const _androidAutomotiveFrame = FrameData(
@@ -373,6 +314,5 @@ extension on FrameAspectRatio {
       case FrameAspectRatio.r_4_3:
         return value * 4 / 3;
     }
-    return null;
   }
 }

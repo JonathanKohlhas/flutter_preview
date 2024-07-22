@@ -7,9 +7,9 @@ class ResizableWidget extends StatefulWidget {
   final Widget trailing;
 
   ResizableWidget({
-    this.child,
+    required this.child,
     this.initialSize = const Size(200, 200),
-    this.trailing,
+    required this.trailing,
   });
 
   final Widget child;
@@ -21,8 +21,8 @@ class ResizableWidget extends StatefulWidget {
 const _kballDiameter = 30.0;
 
 class _ResizableWidgetState extends State<ResizableWidget> {
-  double height;
-  double width;
+  late double height;
+  late double width;
 
   void onDrag(double dx, double dy) {
     var newHeight = height + dy;
@@ -258,7 +258,7 @@ class _ResizableWidgetState extends State<ResizableWidget> {
 }
 
 class ManipulatingBall extends StatefulWidget {
-  ManipulatingBall({Key key, this.onDrag});
+  ManipulatingBall({required this.onDrag});
 
   final Function onDrag;
 
@@ -267,8 +267,8 @@ class ManipulatingBall extends StatefulWidget {
 }
 
 class _ManipulatingBallState extends State<ManipulatingBall> {
-  double initX;
-  double initY;
+  late double initX;
+  late double initY;
 
   _handleDrag(details) {
     setState(() {
@@ -316,13 +316,13 @@ class _ManipulatingBallState extends State<ManipulatingBall> {
 }
 
 typedef OnHoverChildBuilder = Widget Function(
-    BuildContext context, bool hover, Widget child);
+    BuildContext context, bool hover, Widget? child);
 
 class OnHover extends StatefulWidget {
   final OnHoverChildBuilder builder;
-  final Widget child;
+  final Widget? child;
   // You can also pass the translation in here if you want to
-  OnHover({Key key, this.builder, this.child}) : super(key: key);
+  OnHover({Key? key, required this.builder, this.child}) : super(key: key);
   @override
   _OnHoverState createState() => _OnHoverState();
 }

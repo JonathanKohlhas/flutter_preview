@@ -1,24 +1,23 @@
 import 'dart:developer';
-import 'package:flutter/services.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:preview/preview.dart';
 import 'package:preview/src/utils.dart';
 import 'package:preview/src/vm/preview_service.dart';
 //import 'package:window_size/window_size.dart';
 
 class PreviewPage extends StatelessWidget {
-  final List<Previewer> Function() providers;
-  final String path;
-  final Widget child;
+  final List<Previewer> Function()? providers;
+  final String? path;
+  final Widget? child;
 
   PreviewPage({
-    Key key,
-    List<Previewer> Function() providers,
+    Key? key,
+    List<Previewer> Function()? providers,
     this.child,
     this.path,
-  })  : assert(debugAssertPreviewModeRequired(runtimeType)),
+  })  : assert(debugAssertPreviewModeRequired(PreviewPage)),
         this.providers = providers,
         super(key: key);
 
@@ -45,7 +44,8 @@ class PreviewPage extends StatelessWidget {
 class _PreviewServiceHandler extends StatefulWidget {
   final Widget child;
 
-  const _PreviewServiceHandler({Key key, this.child}) : super(key: key);
+  const _PreviewServiceHandler({Key? key, required this.child})
+      : super(key: key);
   @override
   _PreviewServiceHandlerState createState() => _PreviewServiceHandlerState();
 }
@@ -83,12 +83,12 @@ class _PreviewServiceHandlerState extends State<_PreviewServiceHandler> {
 
 class _ProviderPageView extends StatefulWidget {
   final List<Previewer> providers;
-  final Widget child;
-  final String path;
+  final Widget? child;
+  final String? path;
 
   const _ProviderPageView({
-    Key key,
-    this.providers,
+    Key? key,
+    required this.providers,
     this.child,
     this.path,
   }) : super(key: key);
@@ -99,7 +99,7 @@ class _ProviderPageView extends StatefulWidget {
 
 class _ProviderPageViewState extends State<_ProviderPageView>
     with TickerProviderStateMixin {
-  TabController tabController;
+  late TabController tabController;
 
   @override
   void initState() {
@@ -274,7 +274,7 @@ class _ProviderPageViewState extends State<_ProviderPageView>
 class WidgetProvider extends StatelessWidget {
   final Previewer previewer;
 
-  const WidgetProvider({Key key, this.previewer}) : super(key: key);
+  const WidgetProvider({Key? key, required this.previewer}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return previewer.build(context);

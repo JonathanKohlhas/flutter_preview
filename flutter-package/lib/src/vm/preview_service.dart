@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http;
 import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:preview/src/utils.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart' as http;
 
 const kPreviewMode =
     bool.fromEnvironment('flutter.preview', defaultValue: false);
@@ -24,8 +23,6 @@ String get previewAddress {
 }
 
 class PreviewService {
-  static final PreviewService _singleton = PreviewService._internal();
-
   factory PreviewService() {
     assert(debugAssertPreviewModeRequired());
     assert(debugPreviewPortRequired());
@@ -34,8 +31,10 @@ class PreviewService {
 
   PreviewService._internal();
 
-  StreamChannel<String> _socket;
-  Peer _server;
+  static final PreviewService _singleton = PreviewService._internal();
+
+  late Peer _server;
+  late StreamChannel<String> _socket;
 
   start() async {
     try {
@@ -65,12 +64,7 @@ class PreviewService {
     _server.sendNotification('preview.restart');
   }
 
-  String get _defaultFileName {
-    final now = DateTime.now();
-    return 'Preview ${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}.png';
-  }
-
-  saveScreenshot(Uint8List bytes, [String filename]) async {
+  saveScreenshot(Uint8List bytes, [String? filename]) async {
     final uri = Uri.parse('http://$previewAddress:$kPreviewPort/screenshot');
 
     final request = new http.MultipartRequest("POST", uri);
@@ -89,5 +83,10 @@ class PreviewService {
       print(value);
     });
     print('Saved $filename');
+  }
+
+  String get _defaultFileName {
+    final now = DateTime.now();
+    return 'Preview ${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}.png';
   }
 }

@@ -24,7 +24,8 @@ class Persist extends StatefulWidget {
   final Widget child;
   final PersistController controller;
 
-  const Persist({Key key, this.child, this.controller}) : super(key: key);
+  const Persist({Key? key, required this.child, required this.controller})
+      : super(key: key);
   @override
   _PersistState createState() => _PersistState();
 }

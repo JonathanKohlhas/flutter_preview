@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:preview/src/persist.dart';
@@ -14,8 +13,9 @@ class PreviewControls extends StatefulWidget {
   final PersistController controller;
   final ScreenshotController screenshotController;
 
-  PreviewControls({Key key, this.controller, this.screenshotController})
-      : assert(debugAssertPreviewModeRequired(runtimeType)),
+  PreviewControls(
+      {Key? key, required this.controller, required this.screenshotController})
+      : assert(debugAssertPreviewModeRequired(PreviewControls)),
         super(key: key);
   @override
   _PreviewControlsState createState() => _PreviewControlsState();
@@ -64,7 +64,7 @@ class _PreviewControlsState extends State<PreviewControls> {
                   print('done');
                   try {
                     PreviewService()
-                        .saveScreenshot(image, controller.settings.filename);
+                        .saveScreenshot(image, controller.settings.filename!);
                   } catch (e, s) {
                     log('fail', error: e, stackTrace: s);
                   }

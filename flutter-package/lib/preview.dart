@@ -1,34 +1,34 @@
 library preview;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:preview/src/controls.dart';
 import 'package:preview/src/frame/frame.dart';
-import 'package:preview/src/resizable.dart';
 import 'package:preview/src/persist.dart';
+import 'package:preview/src/resizable.dart';
 import 'package:preview/src/screenshot.dart';
 
 import 'src/utils.dart';
+
+export 'src/assets/image.dart';
 export 'src/frame/frame.dart';
 export 'src/frame/frames.dart';
 export 'src/preview_page.dart';
 export 'src/resizable.dart';
-export 'src/assets/image.dart';
 export 'src/screenshot.dart';
 
 class Preview extends StatelessWidget {
   final Widget child;
-  final double height;
-  final double width;
-  final BoxConstraints constraints;
-  final FrameData frame;
-  final ThemeData theme;
+  final double? height;
+  final double? width;
+  final BoxConstraints? constraints;
+  final FrameData? frame;
+  final ThemeData? theme;
   final UpdateMode mode;
-  final ScreenshotSettings screenshotSettings;
+  final ScreenshotSettings? screenshotSettings;
 
   Preview({
-    Key key,
-    @required this.child,
+    super.key,
+    required this.child,
     this.height,
     this.width,
     this.constraints,
@@ -36,21 +36,19 @@ class Preview extends StatelessWidget {
     this.theme,
     this.mode = UpdateMode.hotRestart,
     this.screenshotSettings,
-  })  : assert(debugAssertPreviewModeRequired(runtimeType)),
-        super(key: key);
+  }) : assert(debugAssertPreviewModeRequired(Preview));
 
   String get name => child.runtimeType.toString();
 
   @override
   Widget build(BuildContext context) {
-    Widget result = frame != null ? Frame(frame: frame, child: child) : child;
+    Widget result = frame != null ? Frame(frame: frame!, child: child) : child;
 
     return Container(
       constraints: constraints,
       height: height,
       width: width,
       child: Theme(
-        isMaterialAppTheme: true,
         data: theme ?? Theme.of(context),
         child: result,
       ),
@@ -61,13 +59,13 @@ class Preview extends StatelessWidget {
 mixin Previewer on StatelessWidget {
   Widget build(BuildContext context);
 
-  String get title => null;
+  String? get title => null;
 }
 
 abstract class PreviewProvider extends StatelessWidget with Previewer {
   List<Preview> get previews;
 
-  PreviewProvider() : assert(debugAssertPreviewModeRequired(runtimeType));
+  PreviewProvider() : assert(debugAssertPreviewModeRequired(PreviewProvider));
 
   Widget build(BuildContext context) {
     return Scrollbar(
@@ -95,7 +93,7 @@ abstract class ResizablePreviewProvider extends StatelessWidget with Previewer {
   Preview get preview;
 
   ResizablePreviewProvider()
-      : assert(debugAssertPreviewModeRequired(runtimeType));
+      : assert(debugAssertPreviewModeRequired(ResizablePreviewProvider));
 
   @override
   Widget build(BuildContext context) {
@@ -112,19 +110,19 @@ class _Preview extends StatefulWidget {
   final UpdateMode updateMode;
 
   const _Preview({
-    Key key,
-    @required this.child,
+    super.key,
+    required this.child,
     this.resizable = false,
     this.updateMode = UpdateMode.hotRestart,
-  }) : super(key: key);
+  });
 
   @override
   _PreviewState createState() => _PreviewState();
 }
 
 class _PreviewState extends State<_Preview> {
-  PersistController controller;
-  ScreenshotController screenshotController;
+  late PersistController controller;
+  late ScreenshotController screenshotController;
 
   @override
   void initState() {
@@ -133,7 +131,7 @@ class _PreviewState extends State<_Preview> {
     ScreenshotSettings screenshotSettings =
         widget.child.screenshotSettings ?? ScreenshotSettings();
 
-    if (widget.child.name != null && screenshotSettings.filename == null) {
+    if (screenshotSettings.filename == null) {
       screenshotSettings =
           screenshotSettings.copyWith(filename: widget.child.name + '.png');
     }
