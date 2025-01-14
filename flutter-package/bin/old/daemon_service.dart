@@ -9,14 +9,14 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../preview.dart';
 
-class Stoutsink extends StreamSink<String> {
+class Stoutsink implements StreamSink<String> {
   @override
   void add(String event) {
     stdout.writeln(event);
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     stdout.addError(error, stackTrace);
   }
 
@@ -34,7 +34,7 @@ class Stoutsink extends StreamSink<String> {
   Future get done => stdout.close();
 }
 
-class MultipleSink<T> extends StreamSink<T> {
+class MultipleSink<T> implements StreamSink<T> {
   final Iterable<StreamSink<T>> _sinks;
 
   MultipleSink([this._sinks = const []]);
@@ -45,7 +45,7 @@ class MultipleSink<T> extends StreamSink<T> {
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     _sinks.forEach((sink) => sink.addError(error, stackTrace));
   }
 
@@ -91,7 +91,7 @@ class DaemonService extends MultiplePeer {
 }
 
 abstract class MultiplePeer {
-  Peer _server;
+  late Peer _server;
   Map<WebSocketChannel, Peer> sockets = {};
 
   //StreamChannel<String> _socket;
@@ -110,8 +110,8 @@ abstract class MultiplePeer {
 
   removeWebSocket(WebSocketChannel webSocket) {
     final peer = sockets[webSocket];
-    peer.close();
-    sockets[webSocket] = null;
+    peer?.close();
+    sockets.remove(webSocket);
   }
 
   Future run() async {

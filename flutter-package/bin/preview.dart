@@ -28,8 +28,7 @@ class Server {
       ..get('/ws', ws.webSocketHandler(websocketHandler))
       ..post('/screenshot', (shelf.Request request) async {
         final contentType = ContentType.parse(request.headers["content-type"]!);
-        final transformer =
-            MimeMultipartTransformer(contentType.parameters['boundary']!);
+        final transformer = MimeMultipartTransformer(contentType.parameters['boundary']!);
 
         var params;
         await for (var multipart in request.multipartFormData) {
@@ -68,22 +67,14 @@ class Server {
       }
     };
 
-    shelf.Handler safeNotFoundHandler(shelf.Handler handler) {
-      return (shelf.Request request) async {
-        var resp = await handler(request);
-        return Future.value(resp == null ? shelf.Response.notFound('') : resp);
-      };
-    }
-
     final cascade = shelf.Cascade().add(staticHandler).add(router).handler;
 
-    var handler = const shelf.Pipeline()
-        .addMiddleware(shelf.logRequests())
-        .addHandler(safeNotFoundHandler(cascade));
+    var handler = const shelf.Pipeline().addMiddleware(shelf.logRequests()).addHandler(cascade);
 
     _server = await io.serve(handler, '127.0.0.1', port);
 
     _server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
+    _server.defaultResponseHeaders.add("Access-Control-Allow-Origin", "*");
   }
 
   InternetAddress get address => _server.address;
@@ -152,6 +143,5 @@ void generatePreview(String filePath) {
 
   final v = ExtractPreviewsVisitor(providers);
   unit.visitChildren(v);
-  File('lib/main.preview.dart')
-      .writeAsStringSync(generateFile(filePath, providers));
+  File('lib/main.preview.dart').writeAsStringSync(generateFile(filePath, providers));
 }

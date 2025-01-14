@@ -55,7 +55,7 @@ export class RcpService {
 
 
     request(method: string, params?: any, timeout?: number): Promise<any> {
-        return this.client.request(method, params, timeout);
+        return this.client.request({method, params}, timeout);
 
     }
     

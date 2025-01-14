@@ -1,21 +1,20 @@
 import 'dart:convert';
-import 'package:path/path.dart' as path;
-
 import 'dart:io';
 
 import 'package:async/async.dart';
+import 'package:path/path.dart' as path;
 
 import '../utils.dart';
 import 'run.dart';
 
 class PreviewDaemonService {
-  Stream<PreviewRequest> _requests;
-  HttpServer _server;
+  late Stream<PreviewRequest> _requests;
+  late HttpServer _server;
 
   Future<void> start() async {
     final stinStream = getStindRequests();
     final succedd = await runServer();
-    Stream<PreviewRequest> requests;
+    Stream<PreviewRequest>? requests;
     if (succedd) {
       requests = _server.map((event) => PreviewRequest(request: event));
     }
@@ -143,8 +142,8 @@ class PreviewDaemonService {
 }
 
 class PreviewRequest {
-  final String stdin;
-  final HttpRequest request;
+  final String? stdin;
+  final HttpRequest? request;
 
   PreviewRequest({
     this.stdin,
@@ -152,11 +151,11 @@ class PreviewRequest {
   });
 
   when({
-    Function(String stdin) stdin,
-    Function(HttpRequest request) request,
+    Function(String stdin)? stdin,
+    Function(HttpRequest request)? request,
   }) {
-    if (this.stdin != null) stdin?.call(this.stdin);
-    if (this.request != null) request?.call(this.request);
+    if (this.stdin != null) stdin?.call(this.stdin!);
+    if (this.request != null) request?.call(this.request!);
   }
 
   String getRequest() {
@@ -208,13 +207,14 @@ class DaemonMethod {
   final String name;
   final Map<String, dynamic> params;
 
-  DaemonMethod({this.id, this.name, this.params});
+  DaemonMethod({required this.id, required this.name, required this.params});
 
   factory DaemonMethod.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final method = json['method'];
-    final params =
-        json['params'] != null ? Map<String, dynamic>.from(json['params']) : {};
+    final params = json['params'] != null
+        ? Map<String, dynamic>.from(json['params'])
+        : <String, dynamic>{};
     return DaemonMethod(id: id, name: method, params: params);
   }
 }

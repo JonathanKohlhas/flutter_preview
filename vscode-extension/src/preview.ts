@@ -49,7 +49,7 @@ export class PreviewService {
         console.log('Set up dart process');
         try {
 
-    
+
             this.childProcess = cp.spawn('flutter', [
                 'pub',
                 'run',
@@ -71,11 +71,11 @@ export class PreviewService {
             });
             console.log('Finish Set up dart process');
             this.childProcess?.on('error', (err) => {
-              //  this.cancel();
+                //  this.cancel();
                 console.log('Error dart process: ', err.toString());
             });
 
-          
+
 
             this.childProcess?.stderr?.on('data',
                 function (data) {
@@ -150,7 +150,7 @@ export class PreviewService {
     onDidUpdateActiveTextEditor() {
         const editor = vscode.window.activeTextEditor;
         this.currentDocument = editor?.document?.uri;
-       
+
         let relativePath = vscode.Uri.file(this.currentDocument!.fsPath.replace(this.workspaceUri.fsPath, ''));
         const path = relativePath.path.toString().replace('/', '');
 

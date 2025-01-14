@@ -1,18 +1,17 @@
 import 'dart:async';
-
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:pub_semver/pub_semver.dart';
 
-
-import 'preview_daemon.dart';
 import '../templates.dart';
+import 'preview_daemon.dart';
 
-final featureSet = FeatureSet.fromEnableFlags([
+final featureSet =
+    FeatureSet.fromEnableFlags2(sdkLanguageVersion: Version(3, 0, 0), flags: [
   'extension-methods',
   //'non-nullable',
 ]);
@@ -29,17 +28,18 @@ Future<void> main() async {
 }
 
 class StreamResponse {
-  final String stdin;
-  final HttpRequest request;
+  final String? stdin;
+  final HttpRequest? request;
 
   StreamResponse({
     this.stdin,
     this.request,
   });
 
-  when({Function(String stdin) stdin, Function(HttpRequest request) request}) {
-    if (this.stdin != null) stdin?.call(this.stdin);
-    if (this.request != null) request?.call(this.request);
+  when(
+      {Function(String stdin)? stdin, Function(HttpRequest request)? request}) {
+    if (this.stdin != null) stdin?.call(this.stdin!);
+    if (this.request != null) request?.call(this.request!);
   }
 }
 
@@ -88,17 +88,16 @@ class ExtractPreviewsVisitor extends RecursiveAstVisitor {
     final supportedMixin = 'Previewer';
 
     bool isExtended() {
-      final extendedClass = node.extendsClause?.superclass?.toString();
+      final extendedClass = node.extendsClause?.superclass.toString();
       return supportedExtended == extendedClass;
     }
 
     bool isInMixin() {
-      final item = node.withClause?.mixinTypes?.firstWhere(
+      final item = node.withClause?.mixinTypes.where(
         (c) {
           return supportedMixin == c.toString();
         },
-        orElse: () => null,
-      );
+      ).firstOrNull;
       return item != null;
     }
 

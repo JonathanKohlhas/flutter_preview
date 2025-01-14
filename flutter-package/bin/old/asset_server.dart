@@ -1,10 +1,11 @@
 import 'dart:io';
+
 import 'package:path/path.dart' as path;
 
 final localAddress = InternetAddress('127.0.0.1');
 
 class AssetServer {
-  HttpServer _server;
+  late HttpServer _server;
 
   Future<bool> runServer(int port) async {
     try {

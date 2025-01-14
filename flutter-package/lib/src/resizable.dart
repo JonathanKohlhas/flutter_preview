@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 class ResizableWidget extends StatefulWidget {
   final Size initialSize;
-  final Widget trailing;
+  final Widget? trailing;
 
   ResizableWidget({
     required this.child,
     this.initialSize = const Size(200, 200),
-    required this.trailing,
+    this.trailing,
   });
 
   final Widget child;
@@ -72,8 +72,7 @@ class _ResizableWidgetState extends State<ResizableWidget> {
                   child: Container(
                     height: height,
                     width: width,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2)),
+                    decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 2)),
                   ),
                 ),
               ),
@@ -234,11 +233,7 @@ class _ResizableWidgetState extends State<ResizableWidget> {
               // trailing
               if (widget.trailing != null)
                 Positioned(
-                    top: y,
-                    height: height,
-                    left: x + width,
-                    right: 0,
-                    child: widget.trailing),
+                    top: y, height: height, left: x + width, right: 0, child: widget.trailing!),
               // center center
               // Positioned(
               //   top: x + height / 2 - ballDiameter / 2,
@@ -315,8 +310,7 @@ class _ManipulatingBallState extends State<ManipulatingBall> {
   }
 }
 
-typedef OnHoverChildBuilder = Widget Function(
-    BuildContext context, bool hover, Widget? child);
+typedef OnHoverChildBuilder = Widget Function(BuildContext context, bool hover, Widget? child);
 
 class OnHover extends StatefulWidget {
   final OnHoverChildBuilder builder;

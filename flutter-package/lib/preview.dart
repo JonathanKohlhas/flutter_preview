@@ -42,7 +42,8 @@ class Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget result = frame != null ? Frame(frame: frame!, child: child) : child;
+    Widget result =
+        (frame != null ? Frame(frame: frame!, child: child) : child);
 
     return Container(
       constraints: constraints,

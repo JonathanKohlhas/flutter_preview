@@ -80,7 +80,7 @@ class Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = frame.orientation!.toMediaQuery(
+    final mediaQuery = (frame.orientation ?? Orientation.portrait).toMediaQuery(
         size: frame.size!,
         pixelRatio: frame.pixelRatio!,
         portrait: frame.portraitSafeArea,
@@ -89,8 +89,8 @@ class Frame extends StatelessWidget {
       mediaQuery: mediaQuery,
       child: frame_painter.MobileDeviceFrame(
         platform: frame.platform,
-        style: frame.style!,
-        orientation: frame.orientation!,
+        style: frame.style,
+        orientation: frame.orientation ?? Orientation.portrait,
         mediaQueryData: mediaQuery,
         isKeyboardVisible: frame.isKeyboardVisible,
         keyboardTransitionDuration: frame.keyboardTransitionDuration,
